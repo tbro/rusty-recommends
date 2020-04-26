@@ -38,6 +38,12 @@ async fn main() {
     let result = spotify
         .search_track(&query, 1, 0, Some(Country::UnitedStates))
         .await;
-    println!("{:#?}", result.unwrap());
+
+    let json = match result {
+        Ok(json) => json,
+        Err(e) => panic!("Error: {}", e)
+    };
+
+    println!("{:#?}", json);
 }
 
