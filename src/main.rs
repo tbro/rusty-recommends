@@ -11,7 +11,7 @@ use rspotify::oauth2::SpotifyClientCredentials;
 // 4. else: find something in the same genre
 
 #[derive(Clap)]
-#[clap(version = "1.0", author = "Kevin K.")]
+#[clap(version = "0.1", author = "tbro")]
 struct Opts {
     /// Track option (title)
     #[clap(short = "t", long = "track")]
