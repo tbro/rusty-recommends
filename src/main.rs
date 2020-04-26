@@ -21,13 +21,11 @@ struct Opts {
     artist: Option<String>,
 }
 
-
 #[tokio::main]
 async fn main() {
     let opts: Opts = Opts::parse();
 
     let query = format!("artist:{} track:{}", &opts.artist.unwrap(), &opts.track.unwrap());
-    println!("{}", &query);
 
     let client_credential = SpotifyClientCredentials::default().build();
 
