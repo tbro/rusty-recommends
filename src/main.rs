@@ -2,7 +2,7 @@ use clap::Clap;
 
 use rspotify::client::Spotify;
 use rspotify::oauth2::SpotifyClientCredentials;
-use rspotify::senum::Country;
+// use rspotify::senum::Country;
 
 // 1. get track, artist, etc from args
 // 2. get spotifyid for the same
@@ -36,7 +36,7 @@ async fn main() {
         .build();
 
     let result = spotify
-        .search_track(&query, 1, 0, Some(Country::UnitedStates))
+        .search_track(&query, 1, 0, None)
         .await;
 
     let json = match result {
