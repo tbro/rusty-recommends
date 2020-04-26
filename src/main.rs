@@ -1,4 +1,4 @@
-use std::env;
+use clap::Clap;
 
 use rspotify::client::Spotify;
 use rspotify::oauth2::SpotifyClientCredentials;
@@ -10,19 +10,34 @@ use rspotify::senum::Country;
 // low priority:
 // 4. else: find something in the same genre
 
+#[derive(Clap)]
+#[clap(version = "1.0", author = "Kevin K.")]
+struct Opts {
+    /// Track option (title)
+    #[clap(short = "t", long = "track")]
+    track: Option<String>,
+    /// Artist option
+    #[clap(short = "a", long = "artist")]
+    artist: Option<String>,
+}
+
+
 #[tokio::main]
 async fn main() {
-    let args: Vec<String> = env::args().collect();
-    let title = &args[1];
-    println!("{}", title);
+    let opts: Opts = Opts::parse();
+
+    let query = format!("artist:{} track:{}", &opts.artist.unwrap(), &opts.track.unwrap());
+    println!("{}", &query);
+
     let client_credential = SpotifyClientCredentials::default().build();
 
     let spotify = Spotify::default()
         .client_credentials_manager(client_credential)
         .build();
 
-    let birdy_uri = "spotify:track:6rqhFgbbKwnb9MLmUQDhG6";
-    let track = spotify.track(birdy_uri).await;
-    println!("{:?}", track.unwrap());
+    let result = spotify
+        .search_track(&query, 1, 0, Some(Country::UnitedStates))
+        .await;
+    println!("{:#?}", result.unwrap());
 }
 
