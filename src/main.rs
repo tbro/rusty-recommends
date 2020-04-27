@@ -21,19 +21,21 @@ struct Opts {
     artist: Option<String>,
 }
 
-async fn get_track(artist: &str, track: &str, spotify: Spotify) -> Result<rspotify::model::search::SearchTracks, String> {
+async fn get_track(artist: &str, track: &str, spotify: Spotify) -> Result<String, String> {
     let query = format!("artist:{} track:{}", artist, track);
     let result = spotify
         .search_track(&query, 1, 0, None)
         .await;
 
-    // TODO pick wanted fields (define struct)
-    let json = match result {
-        Ok(json) => json, // TODO filter before return
+    let track = match result {
+        Ok(json) => json.tracks.items.into_iter()
+            .map(|i| i.uri)
+            .collect::<Vec<String>>()
+            .remove(0),
         Err(e) => panic!("Error: {}", e)
     };
 
-    Ok(json)
+    Ok(track)
 }
 
 #[tokio::main]
@@ -45,11 +47,11 @@ async fn main() {
         .client_credentials_manager(client_credential)
         .build();
 
-    let json = get_track(
+    let track = get_track(
         &opts.artist.unwrap(),
         &opts.track.unwrap(),
         spotify).await;
 
-    println!("{:#?}", json);
+    println!("{:#?}", track.unwrap());
 }
 
