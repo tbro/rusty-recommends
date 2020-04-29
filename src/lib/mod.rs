@@ -1,18 +1,17 @@
 use rspotify::client::Spotify;
 use rspotify::model::search::SearchTracks;
 
-fn extract_track(json: SearchTracks) -> String {
+fn extract_track(json: SearchTracks) -> Vec<String> {
     json.tracks.items.into_iter()
         .map(|i| i.uri)
         .collect::<Vec<String>>()
-        .remove(0)
 }
 
 pub async fn get_track(
     artist: &str,
     track: &str,
-    spotify: Spotify
-) -> Result<String, String> {
+    spotify: &Spotify
+) -> Result<Vec<String>, String> {
     let query = format!("artist:{} track:{}", artist, track);
     let result = spotify
         .search_track(&query, 1, 0, None)
@@ -55,6 +54,6 @@ mod tests {
             Ok(data) => data,
             Err(e) => panic!("{}", e)
         };
-        assert_eq!("spotify:track:3AhXZa8sUQht0UEdBJgpGc", extract_track(data));
+        assert_eq!(vec!["spotify:track:3AhXZa8sUQht0UEdBJgpGc".to_string()], extract_track(data));
     }
 }

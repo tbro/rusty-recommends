@@ -1,4 +1,5 @@
 use clap::Clap;
+use serde_json::map::Map;
 
 use rspotify::client::Spotify;
 use rspotify::oauth2::SpotifyClientCredentials;
@@ -37,8 +38,21 @@ async fn main() {
     let track = get_track(
         &opts.artist.unwrap(),
         &opts.track.unwrap(),
-        spotify).await;
+        &spotify).await;
 
-    println!("{:#?}", track.unwrap());
+    let mut payload = Map::new();
+    // payload.insert("min_energy".to_owned(), 0.4.into());
+    payload.insert("min_popularity".to_owned(), 50.into());
+    let result = spotify
+        .recommendations(
+            None,
+            None,
+            Some(track.unwrap()),
+            1,
+            None,
+            &payload,
+        ).await;
+
+    println!("{:#?}", result.unwrap());
 }
 
