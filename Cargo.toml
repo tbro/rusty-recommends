@@ -10,3 +10,5 @@ edition = "2018"
 rspotify = { version = "0.9"}
 tokio = { version = "0.2", features = ["full"] }
 clap = { git = "https://github.com/clap-rs/clap/" }
+[dev-dependencies]
+serde_json = "1.0"
