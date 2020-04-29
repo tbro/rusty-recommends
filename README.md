@@ -11,6 +11,9 @@ It uses Spotify API under the hood, so you need an API key and secret if you don
 it to ignore you. You can set those in the environment or place a `.env` file in the root
 directory of the code. [Follow these instructions](https://developer.spotify.com/documentation/web-api/quick-start) to setup your credentials.
 
+    CLIENT_ID=YYY
+    CLIENT_SECRET=ZZZ
+
 ## about
 
 This is in part to get some practice coding with **rust**. Its very simple but there are a lot 
