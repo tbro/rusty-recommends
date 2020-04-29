@@ -11,8 +11,8 @@ fn extract_track(json: SearchTracks) -> Vec<String> {
 
 #[derive(Debug)]
 pub struct Recommendation {
-    name: String,
-    artist: String,
+    pub name: String,
+    pub artist: String,
 }
 
 fn extract_recommendation(json: Recommendations) -> Vec<Recommendation> {

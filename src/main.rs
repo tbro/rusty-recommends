@@ -41,6 +41,13 @@ async fn main() {
         track.unwrap(),
         &spotify).await;
 
-    println!("{:#?}", result.unwrap());
+    match result {
+        Ok(vector) => {
+            let r = &vector[0];
+            // I'm guessing `~` is seldom used in song titles
+            println!("{} ~ {}", r.name, r.artist)
+        },
+        Err(e) => panic!("{}", e)
+    };
 }
 
