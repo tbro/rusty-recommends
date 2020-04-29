@@ -1,13 +1,10 @@
 use clap::Clap;
-use serde_json::map::Map;
 
 use rspotify::client::Spotify;
 use rspotify::oauth2::SpotifyClientCredentials;
 
 mod lib;
-use crate::lib::get_track;
-
-// use rspotify::senum::Country;
+use crate::lib::{get_track, retrieve_recommendation};
 
 // 1. get track, artist, etc from args
 // 2. get spotifyid for the same
@@ -40,18 +37,9 @@ async fn main() {
         &opts.track.unwrap(),
         &spotify).await;
 
-    let mut payload = Map::new();
-    // payload.insert("min_energy".to_owned(), 0.4.into());
-    payload.insert("min_popularity".to_owned(), 50.into());
-    let result = spotify
-        .recommendations(
-            None,
-            None,
-            Some(track.unwrap()),
-            1,
-            None,
-            &payload,
-        ).await;
+    let result = retrieve_recommendation(
+        track.unwrap(),
+        &spotify).await;
 
     println!("{:#?}", result.unwrap());
 }

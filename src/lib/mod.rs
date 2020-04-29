@@ -1,10 +1,32 @@
 use rspotify::client::Spotify;
 use rspotify::model::search::SearchTracks;
+use rspotify::model::recommend::Recommendations;
+use serde_json::map::Map;
 
 fn extract_track(json: SearchTracks) -> Vec<String> {
     json.tracks.items.into_iter()
         .map(|i| i.uri)
         .collect::<Vec<String>>()
+}
+
+#[derive(Debug)]
+pub struct Recommendation {
+    name: String,
+    artist: String,
+}
+
+fn extract_recommendation(json: Recommendations) -> Vec<Recommendation> {
+    json.tracks.into_iter()
+        .map(|i| {
+            let name = i.name;
+            let artist = i.artists
+                .into_iter()
+                .map(|i| i.name)
+                .collect::<Vec<String>>()
+                .remove(0);
+            Recommendation{name, artist}
+        })
+        .collect::<Vec<Recommendation>>()
 }
 
 pub async fn get_track(
@@ -23,6 +45,31 @@ pub async fn get_track(
     };
 
     Ok(track)
+}
+
+pub async fn retrieve_recommendation(
+    tracks: Vec<String>,
+    spotify: &Spotify
+) -> Result<Vec<Recommendation>, String> {
+    let mut payload = Map::new();
+    // payload.insert("min_energy".to_owned(), 0.4.into());
+    payload.insert("min_popularity".to_owned(), 50.into());
+    let result = spotify
+        .recommendations(
+            None,
+            None,
+            Some(tracks),
+            1,
+            None,
+            &payload,
+        ).await;
+
+    let recommendation = match result {
+        Ok(json) => extract_recommendation(json),
+        Err(e) => panic!("Error: {}", e)
+    };
+
+    Ok(recommendation)
 }
 
 #[cfg(test)]
@@ -60,4 +107,32 @@ mod tests {
             extract_track(data)
         );
     }
+
+    #[test]
+    fn can_extract_recommendation_from_result() {
+        let pwd = match env::var("PWD") {
+            Ok(pwd) => pwd,
+            Err(e) => panic!("{}", e)
+        };
+
+        let path = format!("{}/{}", pwd, "src/lib/recommendation.json");
+        let file = match File::open(path) {
+            Ok(file) => file,
+            Err(e) => panic!("{}", e)
+        };
+
+        let reader = BufReader::new(file);
+        let object = serde_json::from_reader(reader);
+
+        let data: Recommendations = match object {
+            Ok(data) => data,
+            Err(e) => panic!("{}", e)
+        };
+
+        let right = extract_recommendation(data).remove(0);
+
+        assert_eq!("Cecilia".to_string(), right.name);
+        assert_eq!("Simon & Garfunkel".to_string(), right.artist);
+    }
+
 }
