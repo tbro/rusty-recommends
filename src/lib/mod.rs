@@ -54,6 +54,10 @@ mod tests {
             Ok(data) => data,
             Err(e) => panic!("{}", e)
         };
-        assert_eq!(vec!["spotify:track:3AhXZa8sUQht0UEdBJgpGc".to_string()], extract_track(data));
+
+        assert_eq!(
+            vec!["spotify:track:3AhXZa8sUQht0UEdBJgpGc".to_string()],
+            extract_track(data)
+        );
     }
 }
