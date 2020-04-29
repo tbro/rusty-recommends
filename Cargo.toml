@@ -1,7 +1,6 @@
 [package]
 name = "rusty-recomends"
 version = "0.1.0"
-authors = ["baltol <smith@example.com>"]
 edition = "2018"
 license = "GPL-3.0-or-later"
 license-file = "LICENSE.txt"
