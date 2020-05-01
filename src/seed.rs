@@ -1,6 +1,19 @@
 use rspotify::client::Spotify;
 use rspotify::model::search::SearchTracks;
 
+use clap::Clap;
+
+#[derive(Clap)]
+#[clap(version = "0.1", author = "tbro")]
+struct Opts {
+    /// Seed Track Name (title)
+    #[clap(short = "t", long = "track")]
+    track: String,
+    /// Seed Artist Name
+    #[clap(short = "a", long = "artist")]
+    artist: String,
+}
+
 #[derive(Debug)]
 pub struct Seed {
     pub tracks: Vec<String>,
@@ -32,16 +45,18 @@ fn extract_seed(json: SearchTracks) -> Seed {
 }
 
 pub async fn resolve_seed(
-    artist: &str,
-    track: &str,
     spotify: &Spotify
 ) -> Result<Seed, String> {
-    let query = format!("artist:{} track:{}", artist, track);
-    let result = spotify
-        .search_track(&query, 1, 0, None)
-        .await;
-
-    let track = match result {
+    let opts = Opts::parse();
+    let result = match opts {
+        Opts{track, artist} => {
+            let query = format!("artist:{} track:{}", artist, track);
+            spotify
+                .search_track(&query, 2, 0, None)
+                .await
+        },
+    };
+    let track: Seed = match result {
         Ok(json) => extract_seed(json),
         Err(e) => panic!("Error: {}", e)
     };

@@ -1,5 +1,3 @@
-use clap::Clap;
-
 use rspotify::client::Spotify;
 use rspotify::oauth2::SpotifyClientCredentials;
 
@@ -15,29 +13,14 @@ use crate::recommendations::retrieve_recommendation;
 // low priority:
 // 4. else: find something in the same genre
 
-#[derive(Clap)]
-#[clap(version = "0.1", author = "tbro")]
-struct Opts {
-    /// Track option (title)
-    #[clap(short = "t", long = "track")]
-    track: Option<String>,
-    /// Artist option
-    #[clap(short = "a", long = "artist")]
-    artist: Option<String>,
-}
-
 #[tokio::main]
 async fn main() {
-    let opts: Opts = Opts::parse();
     let client_credential = SpotifyClientCredentials::default().build();
-
     let spotify = Spotify::default()
         .client_credentials_manager(client_credential)
         .build();
 
     let seed = resolve_seed(
-        &opts.artist.unwrap(),
-        &opts.track.unwrap(),
         &spotify).await;
 
     let result = retrieve_recommendation(
