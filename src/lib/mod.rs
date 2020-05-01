@@ -15,6 +15,12 @@ pub struct Recommendation {
     pub artist: String,
 }
 
+impl PartialEq for Recommendation {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name && self.artist == other.artist
+    }
+}
+
 fn extract_recommendation(json: Recommendations) -> Vec<Recommendation> {
     json.tracks.into_iter()
         .map(|i| {
@@ -129,10 +135,13 @@ mod tests {
             Err(e) => panic!("{}", e)
         };
 
+        let left = Recommendation{
+            name: "Cecilia".to_string(),
+            artist: "Simon & Garfunkel".to_string()
+        };
         let right = extract_recommendation(data).remove(0);
 
-        assert_eq!("Cecilia".to_string(), right.name);
-        assert_eq!("Simon & Garfunkel".to_string(), right.artist);
+        assert_eq!(left, right);
     }
 
 }
