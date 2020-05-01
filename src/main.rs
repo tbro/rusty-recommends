@@ -3,8 +3,11 @@ use clap::Clap;
 use rspotify::client::Spotify;
 use rspotify::oauth2::SpotifyClientCredentials;
 
-mod lib;
-use crate::lib::{resolve_seed, retrieve_recommendation};
+mod seed;
+mod recommendations;
+
+use crate::seed::resolve_seed;
+use crate::recommendations::retrieve_recommendation;
 
 // 1. get track, artist, etc from args
 // 2. get spotifyid for the same
