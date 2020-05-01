@@ -17,7 +17,7 @@ impl PartialEq for Seed {
 }
 
 fn extract_track(json: SearchTracks) -> Seed {
-    let v = json.tracks.items.into_iter()
+    let v: Vec<(String, String)> = json.tracks.items.into_iter()
         .map(|i| {
             let track = i.id.unwrap();
             let artist = i.artists
