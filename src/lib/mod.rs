@@ -3,10 +3,34 @@ use rspotify::model::search::SearchTracks;
 use rspotify::model::recommend::Recommendations;
 use serde_json::map::Map;
 
-fn extract_track(json: SearchTracks) -> Vec<String> {
-    json.tracks.items.into_iter()
-        .map(|i| i.uri)
-        .collect::<Vec<String>>()
+#[derive(Debug)]
+pub struct Seed {
+    pub tracks: Vec<String>,
+    pub artists: Vec<String>,
+}
+
+impl PartialEq for Seed {
+    fn eq(&self, other: &Self) -> bool {
+        self.tracks[0] == other.tracks[0] &&
+            self.artists[0] == other.artists[0]
+    }
+}
+
+fn extract_track(json: SearchTracks) -> Seed {
+    let v = json.tracks.items.into_iter()
+        .map(|i| {
+            let track = i.id.unwrap();
+            let artist = i.artists
+                .into_iter()
+                .map(|i| i.id.unwrap())
+                .collect::<Vec<String>>()
+                .remove(0);
+            (track, artist)
+        })
+        .collect::<Vec<(String, String)>>();
+
+    let (tracks, artists): (Vec<_>, Vec<_>) = v.iter().cloned().unzip();
+    Seed{tracks, artists}
 }
 
 #[derive(Debug)]
@@ -39,7 +63,7 @@ pub async fn resolve_track(
     artist: &str,
     track: &str,
     spotify: &Spotify
-) -> Result<Vec<String>, String> {
+) -> Result<Seed, String> {
     let query = format!("artist:{} track:{}", artist, track);
     let result = spotify
         .search_track(&query, 1, 0, None)
@@ -54,17 +78,20 @@ pub async fn resolve_track(
 }
 
 pub async fn retrieve_recommendation(
-    tracks: Vec<String>,
+    tracks: Seed,
     spotify: &Spotify
 ) -> Result<Vec<Track>, String> {
+    println!("{:#?}", &tracks);
+    let t = tracks.tracks;
+    let artists = tracks.artists;
     let mut payload = Map::new();
     // payload.insert("min_energy".to_owned(), 0.4.into());
     payload.insert("min_popularity".to_owned(), 50.into());
     let result = spotify
         .recommendations(
+            Some(artists),
             None,
-            None,
-            Some(tracks),
+            Some(t),
             1,
             None,
             &payload,
@@ -108,8 +135,13 @@ mod tests {
             Err(e) => panic!("{}", e)
         };
 
+        let left = Seed{
+            tracks: vec!["3AhXZa8sUQht0UEdBJgpGc".to_string()],
+            artists: vec!["74ASZWbe4lXaubB36ztrGX".to_string()],
+        };
+
         assert_eq!(
-            vec!["spotify:track:3AhXZa8sUQht0UEdBJgpGc".to_string()],
+            left,
             extract_track(data)
         );
     }
