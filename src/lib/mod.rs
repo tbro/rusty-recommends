@@ -59,7 +59,7 @@ fn extract_recommendation(json: Recommendations) -> Vec<Track> {
         .collect::<Vec<Track>>()
 }
 
-pub async fn resolve_track(
+pub async fn resolve_seed(
     artist: &str,
     track: &str,
     spotify: &Spotify
@@ -78,20 +78,18 @@ pub async fn resolve_track(
 }
 
 pub async fn retrieve_recommendation(
-    tracks: Seed,
+    seed: Seed,
     spotify: &Spotify
 ) -> Result<Vec<Track>, String> {
-    println!("{:#?}", &tracks);
-    let t = tracks.tracks;
-    let artists = tracks.artists;
+
     let mut payload = Map::new();
     // payload.insert("min_energy".to_owned(), 0.4.into());
     payload.insert("min_popularity".to_owned(), 50.into());
     let result = spotify
         .recommendations(
-            Some(artists),
-            None,
-            Some(t),
+            Some(seed.artists), // artists
+            None,               // genres
+            Some(seed.tracks), // tracks
             1,
             None,
             &payload,

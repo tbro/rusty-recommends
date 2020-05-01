@@ -4,7 +4,7 @@ use rspotify::client::Spotify;
 use rspotify::oauth2::SpotifyClientCredentials;
 
 mod lib;
-use crate::lib::{resolve_track, retrieve_recommendation};
+use crate::lib::{resolve_seed, retrieve_recommendation};
 
 // 1. get track, artist, etc from args
 // 2. get spotifyid for the same
@@ -32,13 +32,13 @@ async fn main() {
         .client_credentials_manager(client_credential)
         .build();
 
-    let track = resolve_track(
+    let seed = resolve_seed(
         &opts.artist.unwrap(),
         &opts.track.unwrap(),
         &spotify).await;
 
     let result = retrieve_recommendation(
-        track.unwrap(),
+        seed.unwrap(),
         &spotify).await;
 
     match result {
