@@ -10,29 +10,29 @@ fn extract_track(json: SearchTracks) -> Vec<String> {
 }
 
 #[derive(Debug)]
-pub struct Recommendation {
-    pub name: String,
+pub struct Track {
+    pub title: String,
     pub artist: String,
 }
 
-impl PartialEq for Recommendation {
+impl PartialEq for Track {
     fn eq(&self, other: &Self) -> bool {
-        self.name == other.name && self.artist == other.artist
+        self.title == other.title && self.artist == other.artist
     }
 }
 
-fn extract_recommendation(json: Recommendations) -> Vec<Recommendation> {
+fn extract_recommendation(json: Recommendations) -> Vec<Track> {
     json.tracks.into_iter()
         .map(|i| {
-            let name = i.name;
+            let title = i.name;
             let artist = i.artists
                 .into_iter()
                 .map(|i| i.name)
                 .collect::<Vec<String>>()
                 .remove(0);
-            Recommendation{name, artist}
+            Track{title, artist}
         })
-        .collect::<Vec<Recommendation>>()
+        .collect::<Vec<Track>>()
 }
 
 pub async fn get_track(
@@ -56,7 +56,7 @@ pub async fn get_track(
 pub async fn retrieve_recommendation(
     tracks: Vec<String>,
     spotify: &Spotify
-) -> Result<Vec<Recommendation>, String> {
+) -> Result<Vec<Track>, String> {
     let mut payload = Map::new();
     // payload.insert("min_energy".to_owned(), 0.4.into());
     payload.insert("min_popularity".to_owned(), 50.into());
@@ -70,12 +70,12 @@ pub async fn retrieve_recommendation(
             &payload,
         ).await;
 
-    let recommendation = match result {
+    let track = match result {
         Ok(json) => extract_recommendation(json),
         Err(e) => panic!("Error: {}", e)
     };
 
-    Ok(recommendation)
+    Ok(track)
 }
 
 #[cfg(test)]
@@ -135,8 +135,8 @@ mod tests {
             Err(e) => panic!("{}", e)
         };
 
-        let left = Recommendation{
-            name: "Cecilia".to_string(),
+        let left = Track{
+            title: "Cecilia".to_string(),
             artist: "Simon & Garfunkel".to_string()
         };
         let right = extract_recommendation(data).remove(0);

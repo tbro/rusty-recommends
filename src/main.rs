@@ -45,7 +45,7 @@ async fn main() {
         Ok(vector) => {
             let r = &vector[0];
             // I'm guessing `~` is seldom used in song titles
-            println!("{} ~ {}", r.name, r.artist)
+            println!("{} ~ {}", r.title, r.artist)
         },
         Err(e) => panic!("{}", e)
     };
