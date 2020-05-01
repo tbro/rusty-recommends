@@ -35,7 +35,7 @@ fn extract_recommendation(json: Recommendations) -> Vec<Track> {
         .collect::<Vec<Track>>()
 }
 
-pub async fn get_track(
+pub async fn resolve_track(
     artist: &str,
     track: &str,
     spotify: &Spotify
