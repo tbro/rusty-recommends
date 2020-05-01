@@ -16,7 +16,7 @@ impl PartialEq for Seed {
     }
 }
 
-fn extract_track(json: SearchTracks) -> Seed {
+fn extract_seed(json: SearchTracks) -> Seed {
     let v: Vec<(String, String)> = json.tracks.items.into_iter()
         .map(|i| {
             let track = i.id.unwrap();
@@ -70,7 +70,7 @@ pub async fn resolve_seed(
         .await;
 
     let track = match result {
-        Ok(json) => extract_track(json),
+        Ok(json) => extract_seed(json),
         Err(e) => panic!("Error: {}", e)
     };
 
@@ -113,7 +113,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn can_extract_track_from_result() {
+    fn can_extract_seed_from_result() {
         let pwd = match env::var("PWD") {
             Ok(pwd) => pwd,
             Err(e) => panic!("{}", e)
@@ -140,7 +140,7 @@ mod tests {
 
         assert_eq!(
             left,
-            extract_track(data)
+            extract_seed(data)
         );
     }
 
