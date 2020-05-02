@@ -52,7 +52,7 @@ pub async fn resolve_seed(
         Opts{track, artist} => {
             let query = format!("artist:{} track:{}", artist, track);
             spotify
-                .search_track(&query, 2, 0, None)
+                .search_track(&query, 1, 0, None)
                 .await
         },
     };
